@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
 public class PathfindingMain extends ApplicationAdapter {
 	
@@ -19,7 +20,8 @@ public class PathfindingMain extends ApplicationAdapter {
 	
 	private Stage stage;
 	
-	
+	private final int XFieldNum = 13;
+	private final int YFieldNum = 17;
 	@Override
 	public void create () {
 		camera = new OrthographicCamera();
@@ -28,13 +30,18 @@ public class PathfindingMain extends ApplicationAdapter {
 		stage = new Stage();
 		Gdx.input.setInputProcessor(stage);
 		Gdx.graphics.setContinuousRendering(false);
-		
+		Image img = new Image(new Texture("images/green.png"));
+		img.setBounds(0, 0, (WITDH / XFieldNum), (HEIGHT / 17));
 		Field[][] fields = new Field[17][13];
+		stage.addActor(img);
 		for(int i = 0; i < 17; i++){
 			for(int j = 0; j < 13; j++){
-				fields[i][j] = new Field(j, j * (WITDH / 13), i, i * (HEIGHT / 17));
+				fields[i][j] = new Field(j * (WITDH / XFieldNum), (WITDH / XFieldNum) + j * (WITDH / XFieldNum), 
+						i * (HEIGHT / YFieldNum), (HEIGHT / YFieldNum) + i * (HEIGHT / YFieldNum));
 			}
 		}
+		img.setX(fields[0][12].getX());
+		img.setY(fields[0][12].getY());
 		Gdx.graphics.requestRendering();
 		System.out.println(fields[13][0].getX() + ("   ") + fields[13][0].getWidth() +
 				("   ")+ fields[13][0].getY() + ("   ")+ fields[13][0].getHeight());
