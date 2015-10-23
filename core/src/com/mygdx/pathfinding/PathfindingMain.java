@@ -32,22 +32,25 @@ public class PathfindingMain extends ApplicationAdapter {
 		Gdx.graphics.setContinuousRendering(false);
 		Image img = new Image(new Texture("images/green.png"));
 		img.setBounds(0, 0, (WITDH / XFieldNum), (HEIGHT / 17));
-		Field[][] fields = new Field[17][13];
 		stage.addActor(img);
+		Field[][] fields = new Field[17][13];
 		for(int i = 0; i < 17; i++){
 			for(int j = 0; j < 13; j++){
 				fields[i][j] = new Field(j * (WITDH / XFieldNum), (WITDH / XFieldNum) + j * (WITDH / XFieldNum), 
 						i * (HEIGHT / YFieldNum), (HEIGHT / YFieldNum) + i * (HEIGHT / YFieldNum));
 			}
 		}
-		img.setX(fields[0][12].getX());
-		img.setY(fields[0][12].getY());
 		Gdx.graphics.requestRendering();
-		System.out.println(fields[13][0].getX() + ("   ") + fields[13][0].getWidth() +
-				("   ")+ fields[13][0].getY() + ("   ")+ fields[13][0].getHeight());
 	}
 
+	public void Pathfinding(){
+		
+	}
 	
+	public void moveImgToField(Image img, Field f){
+		img.setX(f.getX());
+		img.setY(f.getY());
+	}
 	@Override
 	public void render() {
 		Gdx.gl.glClearColor(1, 0, 0, 1);
