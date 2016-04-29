@@ -8,7 +8,7 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.height = PathfindingMain.HEIGHT;
-		config.width = PathfindingMain.WITDH;
+		config.width = PathfindingMain.WIDTH;
 		config.title = PathfindingMain.TITLE;
 		new LwjglApplication(new PathfindingMain(), config);
 	}
