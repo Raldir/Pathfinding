@@ -25,4 +25,15 @@ public class Board {
 	public Field[][] getAllFields(){
 		return fields;
 	}
+	
+	public Vec2 getFieldPos(Field f){
+		for(int i = 0; i < fields.length; i++){
+			for(int j = 0; i < fields[i].length; j++){
+				if(fields[i][j] == f){
+					return new Vec2(i, j);
+				}
+			}
+		}
+		return null;
+	}
 }
