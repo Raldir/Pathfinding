@@ -1,6 +1,5 @@
 package com.mygdx.pathfinding;
 
-import java.util.ArrayList;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -15,16 +14,16 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
 public class PathfindingMain extends Game {
 
-	public static int WIDTH = 400, HEIGHT = 400;
-	public static int ONEFIELDSIZE = 50;
+	public static int WIDTH = 800, HEIGHT = 800;
+	public static int ONEFIELDSIZE = 100;
 	public static String TITLE = "pathfinding";
 
 	private Stage stage;
 
 	private Board board;
 
-	private OpenList openList = new OpenList();
-//	private ArrayList<Field> closedList = new ArrayList<Field>();
+	private OpenSet openSet = new OpenSet();
+//	private HashSetyFeld> closedList = new HashSet<Field>();
 
 	private StartFigur startFigur;
 	private Figure endFigur;
@@ -41,36 +40,46 @@ public class PathfindingMain extends Game {
 
 		stage.addActor(endFigur);
 		stage.addActor(startFigur);
-		placeInOpenList();
-		for(Field fi : openList){
-			stage.addActor(fi.calculateValues(startFigur.getBefore(), endFigur));
+		updateOpenSet();
+		for(Field fi : openSet){
+			stage.addActor(fi.calculateValues(startFigur.getField(), endFigur));
 		}
 		createButton();
 
 	}
-
-	private void placeInOpenList() {
-		startFigur.getBefore().setMoveable(false);
+	
+	private void updateOpenSet() {
+//		System.out.println(board.getFieldPos(startFigur.getBefore()).x);
 		stage.getActors().removeValue(startFigur.getBefore().getLabel(), true);
+		openSet.remove(startFigur.getField());
 		Vec2 pos = board.getFieldPos(startFigur.getField());
-		if(pos.x < WIDTH)
-		openList.add(board.getAllFields()[pos.x + 1][pos.y]);
+		if((pos.x + 1) < board.getAllFields()[1].length)
+		openSet.add(board.getAllFields()[pos.x + 1][pos.y]);
 		if(pos.x > 0){
-		openList.add(board.getAllFields()[pos.x - 1][pos.y]);
+		openSet.add(board.getAllFields()[pos.x - 1][pos.y]);
 		}
 		if(pos.y > 0){
-		openList.add(board.getAllFields()[pos.x][pos.y - 1]);
+		openSet.add(board.getAllFields()[pos.x][pos.y - 1]);
 		}
-		if(pos.y < HEIGHT){
-		openList.add(board.getAllFields()[pos.x][pos.y + 1]);
+		if((pos.y + 1) < board.getAllFields().length){
+		openSet.add(board.getAllFields()[pos.x][pos.y + 1]);
+		}		
+		for(Field fi : openSet){
+			stage.addActor(fi.calculateValues(startFigur.getField(), endFigur));
+			
 		}
+//		for(Field f : openSet){
+//			if(!f.isMoveable()){
+//				openSet.remove(f);
+//			}
+//		}
 	}
 	
 
 	private Field calculateNextField() {
 		Field maxField = null;
 		int maxValue = 0;
-		for (Field f : openList) {
+		for (Field f : openSet) {
 			if (maxValue < f.getF()) {
 				maxField = f;
 				maxValue = f.getF();
@@ -83,10 +92,11 @@ public class PathfindingMain extends Game {
 	private void nextStep() {
 		Field f = calculateNextField();
 		startFigur.move(f);
-		placeInOpenList();
-		for(Field fi : openList){
-			fi.calculateValues(startFigur.getBefore(), endFigur);
+		updateOpenSet();
+		for(Field fi : openSet){
+			System.out.println(board.getFieldPos(fi).x + " " + board.getFieldPos(fi).x + " " + fi.isMoveable());
 		}
+
 
 	}
 

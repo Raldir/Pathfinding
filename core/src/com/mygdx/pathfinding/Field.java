@@ -60,5 +60,13 @@ public class Field extends Image{
 	public int getF() {
 		return f;
 	}
+	@Override
+	public boolean equals(Object o){
+		if(o instanceof Field){
+			Field f = (Field) o;
+			return getX() == f.getX() && getY() == f.getY() ;
+		}
+		return false;	
+	}
 	
 }
