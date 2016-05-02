@@ -24,6 +24,13 @@ public class Field extends Image{
 		makeValuesVisible();
 	}
 	
+	public Field(int x, int y, int size, String texture){
+		super(new Texture(texture));
+		super.setBounds(x, y, size, size);
+		isMoveable = true;
+		makeValuesVisible();
+	}
+	
 	public void setMoveable(boolean isMoveable){
 		this.isMoveable = isMoveable;
 	}
@@ -36,7 +43,7 @@ public class Field extends Image{
 		textStyle = new LabelStyle();
 		textStyle.font = font;
 
-		text = new Label(g + " " + " " + h + " " + f, textStyle);
+		text = new Label(g + " " + " " + h + "    " + f, textStyle);
 		text.setBounds(getX() + getWidth() / 10, getY() +  getHeight() / 1.3f , getWidth(), getHeight() / 5);
 		text.setFontScale(1f,1f);
 		
@@ -47,8 +54,11 @@ public class Field extends Image{
 		return text;
 	}
 	public Label calculateValues(Field before, Figure end){
-	 g = before.getG();
-	 h = (int) (end.getX() + end.getY());
+	 g = before.getG() + 1;
+	 System.out.println(before + " " + end + "hello");
+	 System.out.println(getX() - end.getX() + "   " + (getY() - end.getY()));
+	 h = (int) (Math.abs(getX() - end.getX()) + Math.abs(getY() - end.getY()));
+	 System.out.println(h);
 	 f = g + h;
 	 return makeValuesVisible();
 	}
@@ -67,6 +77,11 @@ public class Field extends Image{
 			return getX() == f.getX() && getY() == f.getY() ;
 		}
 		return false;	
+	}
+	
+	@Override
+	public int hashCode(){
+		return (int) (getX() + getY());
 	}
 	
 }

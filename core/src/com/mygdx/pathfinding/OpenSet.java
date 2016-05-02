@@ -1,8 +1,9 @@
 package com.mygdx.pathfinding;
 
+import java.util.HashSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class OpenSet extends CopyOnWriteArrayList<Field>{
+public class OpenSet extends HashSet<Field>{
 
 	/**
 	 * 

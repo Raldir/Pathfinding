@@ -1,9 +1,10 @@
 package com.mygdx.pathfinding;
 
-
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -11,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 
 public class PathfindingMain extends Game {
 
@@ -23,7 +25,7 @@ public class PathfindingMain extends Game {
 	private Board board;
 
 	private OpenSet openSet = new OpenSet();
-//	private HashSetyFeld> closedList = new HashSet<Field>();
+	// private HashSetyFeld> closedList = new HashSet<Field>();
 
 	private StartFigur startFigur;
 	private Figure endFigur;
@@ -41,62 +43,76 @@ public class PathfindingMain extends Game {
 		stage.addActor(endFigur);
 		stage.addActor(startFigur);
 		updateOpenSet();
-		for(Field fi : openSet){
-			stage.addActor(fi.calculateValues(startFigur.getField(), endFigur));
-		}
 		createButton();
 
 	}
-	
+
 	private void updateOpenSet() {
-//		System.out.println(board.getFieldPos(startFigur.getBefore()).x);
-		stage.getActors().removeValue(startFigur.getBefore().getLabel(), true);
+		// System.out.println(board.getFieldPos(startFigur.getBefore()).x);
+		stage.getActors().removeValue(startFigur.getBefore().getLabel(), false);
 		openSet.remove(startFigur.getField());
+		startFigur.getField().setDrawable(new SpriteDrawable(new Sprite(new Texture("images/black.png"))));
 		Vec2 pos = board.getFieldPos(startFigur.getField());
-		if((pos.x + 1) < board.getAllFields()[1].length)
-		openSet.add(board.getAllFields()[pos.x + 1][pos.y]);
-		if(pos.x > 0){
-		openSet.add(board.getAllFields()[pos.x - 1][pos.y]);
+		if ((pos.x + 1) < board.getAllFields()[1].length && board.getAllFields()[pos.x + 1][pos.y].isMoveable()) {
+			Field fi = board.getAllFields()[pos.x + 1][pos.y];
+			openSet.add(fi);
+			stage.addActor(fi.calculateValues(startFigur.getBefore(), endFigur));
 		}
-		if(pos.y > 0){
-		openSet.add(board.getAllFields()[pos.x][pos.y - 1]);
+		if (pos.x > 0 && board.getAllFields()[pos.x - 1][pos.y].isMoveable()) {
+			Field fir = board.getAllFields()[pos.x - 1][pos.y];
+			openSet.add(fir);
+			stage.addActor(fir.calculateValues(startFigur.getBefore(), endFigur));
 		}
-		if((pos.y + 1) < board.getAllFields().length){
-		openSet.add(board.getAllFields()[pos.x][pos.y + 1]);
-		}		
-		for(Field fi : openSet){
-			stage.addActor(fi.calculateValues(startFigur.getField(), endFigur));
-			
+		if (pos.y > 0 && board.getAllFields()[pos.x ][pos.y - 1].isMoveable()) {
+			Field fis = board.getAllFields()[pos.x][pos.y - 1];
+			openSet.add(fis);
+			stage.addActor(fis.calculateValues(startFigur.getBefore(), endFigur));
 		}
-//		for(Field f : openSet){
-//			if(!f.isMoveable()){
-//				openSet.remove(f);
-//			}
-//		}
+		if ((pos.y + 1) < board.getAllFields().length && board.getAllFields()[pos.x][pos.y + 1].isMoveable()) {
+			Field fus = board.getAllFields()[pos.x][pos.y + 1];
+			openSet.add(fus);
+			stage.addActor(fus.calculateValues(startFigur.getBefore(), endFigur));
+		}
+		// for(Field f : openSet){
+		// if(!f.isMoveable()){
+		// openSet.remove(f);
+		// }
+		// }
 	}
-	
 
 	private Field calculateNextField() {
 		Field maxField = null;
-		int maxValue = 0;
+		int maxValue = Integer.MAX_VALUE;
 		for (Field f : openSet) {
-			if (maxValue < f.getF()) {
+			if (maxValue > f.getF()) {
 				maxField = f;
 				maxValue = f.getF();
 			}
 		}
 
-		return maxField;
+		return maxField; 	
 	}
 
+	private boolean atGoal(){
+		if(startFigur.getField().equals(endFigur.getField())){
+			return true;
+		}else{
+			return false;
+		}
+	}
 	private void nextStep() {
+		if(atGoal()){
+			System.out.println("Algorithmus fertig");
+			return;
+		}
 		Field f = calculateNextField();
+		System.out.println(startFigur.getBefore());
 		startFigur.move(f);
 		updateOpenSet();
-		for(Field fi : openSet){
-			System.out.println(board.getFieldPos(fi).x + " " + board.getFieldPos(fi).x + " " + fi.isMoveable());
-		}
-
+		// for (Field fi : openSet) {
+		// System.out.println(board.getFieldPos(fi).x + " " +
+		// board.getFieldPos(fi).x + " " + fi.isMoveable());
+		// }
 
 	}
 
