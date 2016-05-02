@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 
-public class Field extends Image{
+public class Field extends Image implements Comparable<Field>{
 
 	private boolean isMoveable;
 	
@@ -16,6 +16,8 @@ public class Field extends Image{
 	LabelStyle textStyle;
 	private BitmapFont font = new BitmapFont();
 	
+	private int turn =  -1;
+	
 	
 	public Field(int x, int y, int size){
 		super(new Texture("images/green.png"));
@@ -24,6 +26,17 @@ public class Field extends Image{
 		makeValuesVisible();
 	}
 	
+	
+	public int getTurn() {
+		return turn;
+	}
+
+
+	public void setTurn(int turn) {
+		this.turn = turn;
+	}
+
+
 	public Field(int x, int y, int size, String texture){
 		super(new Texture(texture));
 		super.setBounds(x, y, size, size);
@@ -55,8 +68,6 @@ public class Field extends Image{
 	}
 	public Label calculateValues(Field before, Figure end){
 	 g = before.getG() + 1;
-	 System.out.println(before + " " + end + "hello");
-	 System.out.println(getX() - end.getX() + "   " + (getY() - end.getY()));
 	 h = (int) (Math.abs(getX() - end.getX()) + Math.abs(getY() - end.getY()));
 	 System.out.println(h);
 	 f = g + h;
@@ -82,6 +93,16 @@ public class Field extends Image{
 	@Override
 	public int hashCode(){
 		return (int) (getX() + getY());
+	}
+
+
+	@Override
+	public int compareTo(Field o) {
+		if(turn > o.getTurn()){
+			return 1;
+		}else{
+			return 0;
+		}
 	}
 	
 }

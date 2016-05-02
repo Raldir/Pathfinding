@@ -1,5 +1,8 @@
 package com.mygdx.pathfinding;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
@@ -16,7 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 
 public class PathfindingMain extends Game {
 
-	public static int WIDTH = 800, HEIGHT = 800;
+	public static int WIDTH = 1000, HEIGHT = 1000;
 	public static int ONEFIELDSIZE = 100;
 	public static String TITLE = "pathfinding";
 
@@ -25,7 +28,8 @@ public class PathfindingMain extends Game {
 	private Board board;
 
 	private OpenSet openSet = new OpenSet();
-	// private HashSetyFeld> closedList = new HashSet<Field>();
+	
+	public static int stepsCounter = 0;
 
 	private StartFigur startFigur;
 	private Figure endFigur;
@@ -47,12 +51,46 @@ public class PathfindingMain extends Game {
 
 	}
 
+	private void makeEndWayVisible(ArrayList<Field> fes){
+		for(Field f : fes){
+			f.setDrawable(new SpriteDrawable(new Sprite(new Texture("images/red.jpg"))));
+		}
+	}
+	private ArrayList<Field> calculateWay(Field f, ArrayList<Field> rekList){
+		ArrayList<Field> copyList = rekList;
+		
+		
+		Vec2 pos = board.getFieldPos(f);
+		Field curr = board.getAllFields()[pos.x][pos.y];
+		copyList.add(curr);
+		if(endFigur.getField().equals(f)){
+			return copyList;
+		}
+		ArrayList<Field> tempList = new ArrayList<Field>();
+		if ((pos.x + 1) < board.getAllFields()[1].length && board.getAllFields()[pos.x + 1][pos.y].getTurn() != -1 ) {
+			tempList.add(board.getAllFields()[pos.x + 1][pos.y]);
+		}
+		if (pos.x > 0  && board.getAllFields()[pos.x - 1][pos.y].getTurn() != -1) {
+			tempList.add(board.getAllFields()[pos.x -1][pos.y]);
+		}
+		if (pos.y > 0  && board.getAllFields()[pos.x][pos.y -1].getTurn() != -1) {
+			tempList.add(board.getAllFields()[pos.x][pos.y - 1]);
+		}
+		if ((pos.y + 1 ) < board.getAllFields().length && board.getAllFields()[pos.x][pos.y + 1].getTurn() != -1) {
+			tempList.add(board.getAllFields()[pos.x][pos.y + 1]);
+		}
+		Field nextField = Collections.max(tempList);
+		return calculateWay(nextField, copyList);
+		
+	}
+	
 	private void updateOpenSet() {
 		// System.out.println(board.getFieldPos(startFigur.getBefore()).x);
 		stage.getActors().removeValue(startFigur.getBefore().getLabel(), false);
 		openSet.remove(startFigur.getField());
 		startFigur.getField().setDrawable(new SpriteDrawable(new Sprite(new Texture("images/black.png"))));
 		Vec2 pos = board.getFieldPos(startFigur.getField());
+		
 		if ((pos.x + 1) < board.getAllFields()[1].length && board.getAllFields()[pos.x + 1][pos.y].isMoveable()) {
 			Field fi = board.getAllFields()[pos.x + 1][pos.y];
 			openSet.add(fi);
@@ -73,11 +111,6 @@ public class PathfindingMain extends Game {
 			openSet.add(fus);
 			stage.addActor(fus.calculateValues(startFigur.getBefore(), endFigur));
 		}
-		// for(Field f : openSet){
-		// if(!f.isMoveable()){
-		// openSet.remove(f);
-		// }
-		// }
 	}
 
 	private Field calculateNextField() {
@@ -101,19 +134,16 @@ public class PathfindingMain extends Game {
 		}
 	}
 	private void nextStep() {
+		stepsCounter++;
 		if(atGoal()){
 			System.out.println("Algorithmus fertig");
+			makeEndWayVisible(calculateWay(board.getAllFields()[0][0], new ArrayList<Field>()));
 			return;
 		}
 		Field f = calculateNextField();
 		System.out.println(startFigur.getBefore());
 		startFigur.move(f);
 		updateOpenSet();
-		// for (Field fi : openSet) {
-		// System.out.println(board.getFieldPos(fi).x + " " +
-		// board.getFieldPos(fi).x + " " + fi.isMoveable());
-		// }
-
 	}
 
 	private TextButton createButton() {
