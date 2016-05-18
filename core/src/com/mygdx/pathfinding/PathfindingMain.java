@@ -48,7 +48,7 @@ public class PathfindingMain extends Game {
 		stage.addActor(startFigur);
 		updateOpenSet();
 		createButton();
-
+		createButtonforRestart();
 	}
 
 	private void makeEndWayVisible(ArrayList<Field> fes){
@@ -153,6 +153,29 @@ public class PathfindingMain extends Game {
 		startFigur.move(f);
 		updateOpenSet();
 	}
+	private TextButton createButtonforRestart() {
+		BitmapFont font = new BitmapFont();
+		Skin skin = new Skin();
+		TextureAtlas buttonAtlas = new TextureAtlas(Gdx.files.internal("images/Button.pack"));
+		skin.addRegions(buttonAtlas);
+		TextButtonStyle textButtonStyle = new TextButtonStyle();
+		textButtonStyle.font = font;
+		textButtonStyle.up = skin.getDrawable("black");
+		textButtonStyle.down = skin.getDrawable("black");
+		textButtonStyle.checked = skin.getDrawable("black");
+		TextButton button = new TextButton("Recreate", textButtonStyle);
+		stage.addActor(button);
+		button.setBounds(WIDTH - 2 * ONEFIELDSIZE, 0, ONEFIELDSIZE, ONEFIELDSIZE / 2);
+		button.addListener(new ChangeListener() {
+
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				reset();
+
+			}
+		});
+		return button;
+	}
 
 	private TextButton createButton() {
 		BitmapFont font = new BitmapFont();
@@ -177,5 +200,9 @@ public class PathfindingMain extends Game {
 		});
 		return button;
 	}
-
+public void reset(){
+	stepsCounter = 0;
+	openSet = new OpenSet();
+	create();
+}
 }
