@@ -4,7 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 
 public class Board {
 	
-	private static final double OBSTACLEPROPABILITY = 0.8f;
+	private static final double OBSTACLEPROPABILITY = 0.7f;
 	private Field[][] fields;
 	
 	public Board(Stage i, int width, int heigth, int singleFieldSize){

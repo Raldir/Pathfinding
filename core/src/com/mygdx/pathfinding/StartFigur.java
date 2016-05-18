@@ -6,7 +6,7 @@ public class StartFigur extends Figure {
 	private Field before;
 	
 	public StartFigur(Field f){
-		super("images/solaire.png", f);
+		super("images/roboter.jpg", f);
 		move(f);
 		before.setTurn(0);
 	}

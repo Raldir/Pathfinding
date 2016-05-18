@@ -56,6 +56,7 @@ public class PathfindingMain extends Game {
 			f.setDrawable(new SpriteDrawable(new Sprite(new Texture("images/red.jpg"))));
 		}
 	}
+	
 	private ArrayList<Field> calculateWay(Field f, ArrayList<Field> rekList){
 		ArrayList<Field> copyList = rekList;
 		
@@ -80,6 +81,13 @@ public class PathfindingMain extends Game {
 			tempList.add(board.getAllFields()[pos.x][pos.y + 1]);
 		}
 		Field nextField = Collections.max(tempList);
+		
+		if(copyList.contains(nextField)){
+		Field fis = copyList.get(copyList.indexOf(f) - 1);
+			copyList.remove(f);
+			f.setTurn(-1);
+			return calculateWay(nextField, copyList);
+		}
 		return calculateWay(nextField, copyList);
 		
 	}
