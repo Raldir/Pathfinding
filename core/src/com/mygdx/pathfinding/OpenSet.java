@@ -1,8 +1,13 @@
 package com.mygdx.pathfinding;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.PriorityQueue;
 
-public class OpenSet extends HashSet<Field>{
+import sun.misc.Queue;
+
+
+public class OpenSet extends PriorityQueue<Field>{
 
 	/**
 	 * 
@@ -13,9 +18,7 @@ public class OpenSet extends HashSet<Field>{
 	public boolean add(Field f){
 		if(f.isMoveable()){
 			return super.add(f);
-		}else{
-			return false;
-		}
-
+	}
+		return false;
 	}
 }

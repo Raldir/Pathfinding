@@ -28,7 +28,7 @@ public class PathfindingMain extends Game {
 	private Board board;
 
 	private OpenSet openSet = new OpenSet();
-	
+
 	public static int stepsCounter = 0;
 
 	private StartFigur startFigur;
@@ -51,101 +51,80 @@ public class PathfindingMain extends Game {
 		createButtonforRestart();
 	}
 
-	private void makeEndWayVisible(ArrayList<Field> fes){
-		for(Field f : fes){
+	private void makeEndWayVisible(Field f) {
+		System.out.println(board.getFieldPos(f).x + " " + board.getFieldPos(f).y);
+		if (!f.equals(board.getAllFields()[0][0])) {
 			f.setDrawable(new SpriteDrawable(new Sprite(new Texture("images/red.jpg"))));
+			makeEndWayVisible(f.getBeforeField());
+		} else {
+			f.setDrawable(new SpriteDrawable(new Sprite(new Texture("images/red.jpg"))));
+			return;
 		}
 	}
-	
-	private ArrayList<Field> calculateWay(Field f, ArrayList<Field> rekList){
-		ArrayList<Field> copyList = rekList;
-		
-		
-		Vec2 pos = board.getFieldPos(f);
-		Field curr = board.getAllFields()[pos.x][pos.y];
-		copyList.add(curr);
-		if(endFigur.getField().equals(f)){
-			return copyList;
+
+	private void checkSingleField(Field fi) {
+		stage.getActors().removeValue(fi.getLabel(), false);
+		if (fi.calculateValues(startFigur.getField(), endFigur) && (openSet.contains(fi))) {
+			fi.setBeforeField(startFigur.getField());
+		} else if (!openSet.contains(fi) && fi.isMoveable()) {
+			openSet.add(fi);
+			fi.setBeforeField(startFigur.getField());
 		}
-		ArrayList<Field> tempList = new ArrayList<Field>();
-		if ((pos.x + 1) < board.getAllFields()[1].length && board.getAllFields()[pos.x + 1][pos.y].getTurn() != -1 ) {
-			tempList.add(board.getAllFields()[pos.x + 1][pos.y]);
-		}
-		if (pos.x > 0  && board.getAllFields()[pos.x - 1][pos.y].getTurn() != -1) {
-			tempList.add(board.getAllFields()[pos.x -1][pos.y]);
-		}
-		if (pos.y > 0  && board.getAllFields()[pos.x][pos.y -1].getTurn() != -1) {
-			tempList.add(board.getAllFields()[pos.x][pos.y - 1]);
-		}
-		if ((pos.y + 1 ) < board.getAllFields().length && board.getAllFields()[pos.x][pos.y + 1].getTurn() != -1) {
-			tempList.add(board.getAllFields()[pos.x][pos.y + 1]);
-		}
-		Field nextField = Collections.max(tempList);
-		
-		if(copyList.contains(nextField)){
-		Field fis = copyList.get(copyList.indexOf(f) - 1);
-			copyList.remove(f);
-			f.setTurn(-1);
-			return calculateWay(nextField, copyList);
-		}
-		return calculateWay(nextField, copyList);
-		
+		stage.addActor(fi.makeValuesVisible());
 	}
-	
+
 	private void updateOpenSet() {
-		// System.out.println(board.getFieldPos(startFigur.getBefore()).x);
 		stage.getActors().removeValue(startFigur.getBefore().getLabel(), false);
 		openSet.remove(startFigur.getField());
 		startFigur.getField().setDrawable(new SpriteDrawable(new Sprite(new Texture("images/black.png"))));
 		Vec2 pos = board.getFieldPos(startFigur.getField());
-		
-		if ((pos.x + 1) < board.getAllFields()[1].length && board.getAllFields()[pos.x + 1][pos.y].isMoveable()) {
+
+		if ((pos.x + 1) < board.getAllFields()[1].length) {
 			Field fi = board.getAllFields()[pos.x + 1][pos.y];
-			openSet.add(fi);
-			stage.addActor(fi.calculateValues(startFigur.getBefore(), endFigur));
+			checkSingleField(fi);
 		}
-		if (pos.x > 0 && board.getAllFields()[pos.x - 1][pos.y].isMoveable()) {
+		if (pos.x > 0) {
 			Field fir = board.getAllFields()[pos.x - 1][pos.y];
-			openSet.add(fir);
-			stage.addActor(fir.calculateValues(startFigur.getBefore(), endFigur));
+			checkSingleField(fir);
+
 		}
-		if (pos.y > 0 && board.getAllFields()[pos.x ][pos.y - 1].isMoveable()) {
+		if (pos.y > 0) {
 			Field fis = board.getAllFields()[pos.x][pos.y - 1];
-			openSet.add(fis);
-			stage.addActor(fis.calculateValues(startFigur.getBefore(), endFigur));
+			checkSingleField(fis);
 		}
-		if ((pos.y + 1) < board.getAllFields().length && board.getAllFields()[pos.x][pos.y + 1].isMoveable()) {
+		if ((pos.y + 1) < board.getAllFields().length) {
 			Field fus = board.getAllFields()[pos.x][pos.y + 1];
-			openSet.add(fus);
-			stage.addActor(fus.calculateValues(startFigur.getBefore(), endFigur));
+			checkSingleField(fus);
 		}
 	}
 
 	private Field calculateNextField() {
-		Field maxField = null;
-		int maxValue = Integer.MAX_VALUE;
+		Field minField = null;
+		int minValue = Integer.MAX_VALUE;
 		for (Field f : openSet) {
-			if (maxValue > f.getF()) {
-				maxField = f;
-				maxValue = f.getF();
+			if (minValue > f.getF()) {
+				minField = f;
+				minValue = f.getF();
 			}
 		}
-
-		return maxField; 	
+		return minField;
 	}
 
-	private boolean atGoal(){
-		if(startFigur.getField().equals(endFigur.getField())){
+	private boolean atGoal() {
+		if (startFigur.getField().equals(endFigur.getField())) {
 			return true;
-		}else{
+		} else {
 			return false;
 		}
 	}
+
 	private void nextStep() {
 		stepsCounter++;
-		if(atGoal()){
+		if (atGoal()) {
 			System.out.println("Algorithmus fertig");
-			makeEndWayVisible(calculateWay(board.getAllFields()[0][0], new ArrayList<Field>()));
+			// makeEndWayVisible(calculateWay(board.getAllFields()[0][0], new
+			// ArrayList<Field>()));
+			makeEndWayVisible(endFigur.getField());
 			return;
 		}
 		Field f = calculateNextField();
@@ -153,6 +132,7 @@ public class PathfindingMain extends Game {
 		startFigur.move(f);
 		updateOpenSet();
 	}
+
 	private TextButton createButtonforRestart() {
 		BitmapFont font = new BitmapFont();
 		Skin skin = new Skin();
@@ -200,9 +180,10 @@ public class PathfindingMain extends Game {
 		});
 		return button;
 	}
-public void reset(){
-	stepsCounter = 0;
-	openSet = new OpenSet();
-	create();
-}
+
+	public void reset() {
+		stepsCounter = 0;
+		openSet = new OpenSet();
+		create();
+	}
 }
